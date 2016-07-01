@@ -2723,29 +2723,6 @@ static void fuse_lib_setattr(fuse_req_t req, fuse_ino_t ino, struct stat *attr,
 				err = fuse_fs_truncate(f->fs, path,
 						       attr->st_size);
 		}
-#ifdef HAVE_UTIMENSAT
-		if (!err &&
-		    (valid & (FUSE_SET_ATTR_ATIME | FUSE_SET_ATTR_MTIME))) {
-			struct timespec tv[2];
-
-			tv[0].tv_sec = 0;
-			tv[1].tv_sec = 0;
-			tv[0].tv_nsec = UTIME_OMIT;
-			tv[1].tv_nsec = UTIME_OMIT;
-
-			if (valid & FUSE_SET_ATTR_ATIME_NOW)
-				tv[0].tv_nsec = UTIME_NOW;
-			else if (valid & FUSE_SET_ATTR_ATIME)
-				tv[0] = attr->st_atim;
-
-			if (valid & FUSE_SET_ATTR_MTIME_NOW)
-				tv[1].tv_nsec = UTIME_NOW;
-			else if (valid & FUSE_SET_ATTR_MTIME)
-				tv[1] = attr->st_mtim;
-
-			err = fuse_fs_utimens(f->fs, path, tv);
-		} else
-#endif
 		if (!err &&
 		    (valid & (FUSE_SET_ATTR_ATIME | FUSE_SET_ATTR_MTIME)) ==
 		    (FUSE_SET_ATTR_ATIME | FUSE_SET_ATTR_MTIME)) {
